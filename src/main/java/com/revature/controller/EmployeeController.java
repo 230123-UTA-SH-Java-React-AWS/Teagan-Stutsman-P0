@@ -17,7 +17,7 @@ public class EmployeeController implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        // TODO Auto-generated method stub
+
         String verb = exchange.getRequestMethod();
 
         switch (verb) {

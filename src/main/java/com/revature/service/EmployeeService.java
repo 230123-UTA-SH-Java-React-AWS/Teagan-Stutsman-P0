@@ -53,16 +53,26 @@ public class EmployeeService {
         try {
             // converts JSON employee into Employee object
             Employee newEmployee = mapper.readValue(employeeJSON, Employee.class);
-            
+
+            // TODO: receive employees from repository
+
+            // TODO: validate that the employee email is unique
+
+            // TODO: send newEmployee to repository to be stored in the database
+            repo.Save(newEmployee);
+
         } catch (JsonParseException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
+
         } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
+
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
+
         }
     }
 }

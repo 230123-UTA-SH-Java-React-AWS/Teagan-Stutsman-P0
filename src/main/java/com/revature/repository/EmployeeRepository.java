@@ -1,4 +1,6 @@
 package com.revature.repository;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -15,7 +17,15 @@ public class EmployeeRepository {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            mapper.writeValueAsString(employee);
+            String employeeJSON = mapper.writeValueAsString(employee);
+
+            File employeeFile = new File("./src/main/java/com/revature/repository/employee.json");
+            employeeFile.createNewFile();
+
+            FileWriter writer = new FileWriter("./src/main/java/com/revature/repository/employee.json");
+            writer.write(employeeJSON);
+            writer.close();
+
         } catch (JsonGenerationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
