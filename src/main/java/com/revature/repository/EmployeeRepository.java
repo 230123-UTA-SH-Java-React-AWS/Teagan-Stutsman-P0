@@ -7,27 +7,24 @@ import java.io.IOException;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
+// import org.codehaus.jackson.map.ObjectMapper;
 
-import com.revature.model.Employee;
+// import com.revature.model.Employee;
 
 // Repository layer is responsible for interacting w/ database + sending/receiving info from database
 public class EmployeeRepository {
     // Store locally on computer for now (employee.json)
-    public void Save(Employee employee){
+    public void Save(String newEmployeeJSON){
         //Actual implementation
-        ObjectMapper mapper = new ObjectMapper();
 
         try {
-            String employeeJSON = mapper.writeValueAsString(employee);
-
             // Create file if it doesn't already exist
             File employeeFile = new File("./src/main/java/com/revature/repository/employee.json");
             employeeFile.createNewFile();
 
             // Create FileWriter object and write employee to newline (makes it easier for readline on retrieval)
             FileWriter writer = new FileWriter("./src/main/java/com/revature/repository/employee.json", true);
-            writer.write(employeeJSON + "\n");
+            writer.write(newEmployeeJSON + "\n");
             writer.close();
 
         // [{},{},{},{}]

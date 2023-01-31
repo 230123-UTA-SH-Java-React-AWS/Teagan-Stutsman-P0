@@ -5,17 +5,17 @@ public class Manager extends User{
         super(username);
     }
 
-    public void viewPendingRequest(){
-        // Managers can view pending requests and select yes or no
-    }
+    // public void viewPendingRequest(){
+    //     // Managers can view pending requests and select yes or no
+    // }
 
 
-    // These are helper methods for interacting with requests
-    public void approveRequest(){
+    // // These are helper methods for interacting with requests
+    // public void approveRequest(){
 
-    }
+    // }
 
-    public void denyRequest(){
+    // public void denyRequest(){
 
-    }
+    // }
 }
