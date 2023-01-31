@@ -42,8 +42,6 @@ public class EmployeeRepository {
     }
 
     public String getRegisteredEmployees(){
-        ObjectMapper mapper = new ObjectMapper();
-
         StringBuilder sb = new StringBuilder();
         sb.append("[");
 
