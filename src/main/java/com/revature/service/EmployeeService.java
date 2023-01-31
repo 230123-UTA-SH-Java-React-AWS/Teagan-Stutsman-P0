@@ -2,6 +2,7 @@ package com.revature.service;
 
 import java.io.IOException;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -52,7 +53,11 @@ public class EmployeeService {
 
         try {
             // converts JSON employee into Employee object
-            Employee newEmployee = mapper.readValue(employeeJSON, Employee.class);
+            JsonNode node = mapper.readTree(employeeJSON);
+            String un = node.get("username").asText();
+            String pw = node.get("password").asText();
+            Employee newEmployee = new Employee(un, pw);
+            // Employee newEmployee = mapper.readValue(employeeJSON, Employee.class);
 
             // TODO: receive employees from repository
 

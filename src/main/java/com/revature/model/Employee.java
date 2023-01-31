@@ -7,6 +7,10 @@ public class Employee extends User{
         super(un, pw);
     }
 
+    public Employee(){
+        super("username1", "password1");
+    }
+
     public void addReimbursementRequest(float amt, String description, int status){
         // Employee can request a reimbursement
         EmployeeService.requestReimbursement(amt, description, status);
