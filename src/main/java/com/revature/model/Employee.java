@@ -3,12 +3,12 @@ package com.revature.model;
 import com.revature.service.EmployeeService;
 
 public class Employee extends User{
-    public Employee(String un, String pw) {
-        super(un, pw);
+    public Employee(String username) {
+        super(username);
     }
 
     public Employee(){
-        super("username1", "password1");
+        super("user_default");
         System.out.println("Default employee object created");
     }
 

@@ -15,28 +15,6 @@ import com.revature.repository.EmployeeRepository;
 // Service layer responsible for holding behavior-driven classes
 public class EmployeeService {
 
-    // Validate user credentials
-    public static int login(String user, String pass){
-        // log in with email and password
-        // Repository search for email
-
-        // Check if pass is correct
-
-        // Return valid 0 or invalid != 0
-        return 0;
-    }
-
-    public int register(){
-        // check if email is already registered - repo search
-        boolean alreadyRegistered = false;
-        // default role to 'employee'
-        int role = 1;
-        // register with at least email + password
-
-        // Return valid 0 or invalid != 0
-        return 0;
-    }
-
     public static void requestReimbursement(float amt, String description, int status){
         
     }
@@ -55,10 +33,10 @@ public class EmployeeService {
 
         try {
             // Converts JSON employee into Employee object
+            
             JsonNode node = mapper.readTree(employeeJSON);
-            String un = node.get("username").asText();
-            String pw = node.get("password").asText();
-            Employee newEmployee = new Employee(un, pw);
+            String username = node.get("username").asText();
+            Employee newEmployee = new Employee(username);
             // Employee newEmployee = mapper.readValue(employeeJSON, Employee.class);
 
             // Receive employees from repository
@@ -71,7 +49,7 @@ public class EmployeeService {
             List<Employee> listAllEmployees = mapper.readValue(allEmployeesJSON,  new TypeReference<List<Employee>>(){});
             boolean alreadyRegistered = false;
             for(Employee e : listAllEmployees){
-                if(e.getUsername().equalsIgnoreCase(un)){
+                if(e.getUsername().equalsIgnoreCase(username)){
                     alreadyRegistered = true;
                     System.out.println("Employee already registered...");
                 }

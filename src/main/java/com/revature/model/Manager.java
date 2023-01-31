@@ -1,8 +1,8 @@
 package com.revature.model;
 
 public class Manager extends User{
-    public Manager(String un, String pw){
-        super(un, pw);
+    public Manager(String username){
+        super(username);
     }
 
     public void viewPendingRequest(){
