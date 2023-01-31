@@ -9,6 +9,7 @@ public class Employee extends User{
 
     public Employee(){
         super("username1", "password1");
+        System.out.println("Default employee object created");
     }
 
     public void addReimbursementRequest(float amt, String description, int status){

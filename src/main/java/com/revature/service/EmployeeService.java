@@ -1,11 +1,13 @@
 package com.revature.service;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 import com.revature.model.Employee;
 import com.revature.repository.EmployeeRepository;
@@ -52,32 +54,41 @@ public class EmployeeService {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            // converts JSON employee into Employee object
+            // Converts JSON employee into Employee object
             JsonNode node = mapper.readTree(employeeJSON);
             String un = node.get("username").asText();
             String pw = node.get("password").asText();
             Employee newEmployee = new Employee(un, pw);
             // Employee newEmployee = mapper.readValue(employeeJSON, Employee.class);
 
-            // TODO: receive employees from repository
+            // Receive employees from repository
+            String allEmployeesJSON = repo.getRegisteredEmployees();
+            System.out.println(allEmployeesJSON);
 
-            // TODO: validate that the employee email is unique
 
-            // TODO: send newEmployee to repository to be stored in the database
-            repo.Save(newEmployee);
+            // Validate that the employee email is unique
+            // Generate List from all employees and iterate through them
+            List<Employee> listAllEmployees = mapper.readValue(allEmployeesJSON,  new TypeReference<List<Employee>>(){});
+            boolean alreadyRegistered = false;
+            for(Employee e : listAllEmployees){
+                if(e.getUsername().equalsIgnoreCase(un)){
+                    alreadyRegistered = true;
+                    System.out.println("Employee already registered...");
+                }
+            }
+
+            // Send newEmployee to repository to be stored in the database
+            if(!alreadyRegistered){
+                repo.Save(newEmployee);
+            }
+
 
         } catch (JsonParseException e) {
-
-            e.printStackTrace();
-
+              e.printStackTrace();
         } catch (JsonMappingException e) {
-
             e.printStackTrace();
-
         } catch (IOException e) {
-
             e.printStackTrace();
-
         }
     }
 }

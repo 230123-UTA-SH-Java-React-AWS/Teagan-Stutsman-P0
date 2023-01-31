@@ -1,6 +1,8 @@
 package com.revature.repository;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -11,7 +13,7 @@ import com.revature.model.Employee;
 
 // Repository layer is responsible for interacting w/ database + sending/receiving info from database
 public class EmployeeRepository {
-    // Store locally on computer
+    // Store locally on computer for now (employee.json)
     public void Save(Employee employee){
         //Actual implementation
         ObjectMapper mapper = new ObjectMapper();
@@ -19,23 +21,47 @@ public class EmployeeRepository {
         try {
             String employeeJSON = mapper.writeValueAsString(employee);
 
+            // Create file if it doesn't already exist
             File employeeFile = new File("./src/main/java/com/revature/repository/employee.json");
             employeeFile.createNewFile();
 
-            FileWriter writer = new FileWriter("./src/main/java/com/revature/repository/employee.json");
-            writer.write(employeeJSON);
+            // Create FileWriter object and write employee to newline (makes it easier for readline on retrieval)
+            FileWriter writer = new FileWriter("./src/main/java/com/revature/repository/employee.json", true);
+            writer.write(employeeJSON + "\n");
             writer.close();
 
+        // [{},{},{},{}]
+
         } catch (JsonGenerationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    public String getRegisteredEmployees(){
+        ObjectMapper mapper = new ObjectMapper();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("./src/main/java/com/revature/repository/employee.json"));
+
+            while(reader.ready()){
+                sb.append(reader.readLine());
+                sb.append(",");
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        sb.append("]");
+        
+        return sb.toString().replaceAll(",]$", "]");
     }
     
 }

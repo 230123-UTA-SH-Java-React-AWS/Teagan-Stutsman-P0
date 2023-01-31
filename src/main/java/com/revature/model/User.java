@@ -22,7 +22,7 @@ public abstract class User {
     public User(String un, String pw){
         this.username = un;
         this.password = pw;
-        System.out.println(un + " " + pw);
+        System.out.println("User Constructor Call");
     }
     
 }
