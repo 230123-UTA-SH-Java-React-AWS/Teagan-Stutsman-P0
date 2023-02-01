@@ -35,7 +35,6 @@ public class EmployeeRepository {
 
     }
 
-    // Returns
     public HashSet<String> getRegisteredEmployees(){
         // employeeList - Hash set of usernames
         HashSet<String> employeeList = new HashSet<String>();

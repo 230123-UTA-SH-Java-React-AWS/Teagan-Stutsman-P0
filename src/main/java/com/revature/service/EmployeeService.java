@@ -13,21 +13,6 @@ import com.revature.repository.EmployeeRepository;
 
 // Service layer responsible for holding behavior-driven classes
 public class EmployeeService {
-
-    public static void requestReimbursement(float amt, String description, int status){
-        
-    }
-
-    public static String populateRequestHistory(){
-        // TODO: create a requestHistory database and store like users
-        return " ";
-    }
-
-
-
-
-
-
     // Recieves JSON String from Controller calls Repo layer method
     public void registerEmployee(String employeeJSON){
         // Create repo layer object
@@ -60,5 +45,10 @@ public class EmployeeService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // TODO: validate password matches username given
+    public void loginEmployee(String employeeJSON){
+
     }
 }

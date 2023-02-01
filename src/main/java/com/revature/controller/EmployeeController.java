@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import com.revature.service.EmployeeService;
+import com.revature.service.TicketService;
 
 
 public class EmployeeController implements HttpHandler {
@@ -23,14 +24,40 @@ public class EmployeeController implements HttpHandler {
         String verb = exchange.getRequestMethod();
 
         switch (verb) {
+            case "GET":
+                getRequest(exchange);
+                break;
+
             case "POST":
                 postRequest(exchange);
                 break;
             
+            case "PUT":
+                System.out.println("No functionality for put yet...");
+                //putRequest(exchange);
+                break;
+            
+            case "DELETE":
+                System.out.println("No functionality for delete yet...");
+                //deleteRequest(exchange);
+                break;
+            
             default:
+                System.out.println("Bruh wtf...");
                 break;
 
         }
+    }
+
+    private void getRequest(HttpExchange exchange) throws IOException{
+        TicketService ts = new TicketService();
+        String jsonCurrentList = ts.populateRequestHistory();
+
+        exchange.sendResponseHeaders(200, jsonCurrentList.getBytes().length);
+
+        OutputStream os = exchange.getResponseBody();
+        os.write(jsonCurrentList.getBytes());
+        os.close();
     }
 
     private void postRequest(HttpExchange exchange) throws IOException{
@@ -54,7 +81,9 @@ public class EmployeeController implements HttpHandler {
             }
         }
 
-        exchange.sendResponseHeaders(200, textBuilder.toString().getBytes().length);
+        String outgoingMessage = "You sent us a new user";
+        //exchange.sendResponseHeaders(200, textBuilder.toString().getBytes().length);
+        exchange.sendResponseHeaders(200, outgoingMessage.getBytes().length);
 
         // Don't forget service layer call
 
@@ -65,7 +94,8 @@ public class EmployeeController implements HttpHandler {
         es.registerEmployee(textBuilder.toString());
 
         OutputStream os = exchange.getResponseBody();
-        os.write(textBuilder.toString().getBytes());
+        //os.write(textBuilder.toString().getBytes());
+        os.write(outgoingMessage.getBytes());
         os.close();
 
     }
