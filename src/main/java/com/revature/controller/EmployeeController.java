@@ -60,7 +60,7 @@ public class EmployeeController implements HttpHandler {
         EmployeeService es = new EmployeeService();
 
         // Calls save employee method (param: JSON String)
-        es.saveEmployee(textBuilder.toString());
+        es.registerEmployee(textBuilder.toString());
 
         OutputStream os = exchange.getResponseBody();
         os.write(textBuilder.toString().getBytes());

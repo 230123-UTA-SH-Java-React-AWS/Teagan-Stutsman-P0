@@ -1,62 +1,59 @@
 package com.revature.repository;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FileReader;
-import java.io.IOException;
+import java.sql.Statement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashSet;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-// import org.codehaus.jackson.map.ObjectMapper;
-
-// import com.revature.model.Employee;
+import com.revature.model.Employee;
+import com.revature.util.ConnectionUtil;
 
 // Repository layer is responsible for interacting w/ database + sending/receiving info from database
 public class EmployeeRepository {
-    // Store locally on computer for now (employee.json)
-    public void Save(String newEmployeeJSON){
-        //Actual implementation
+    // Stores employees in postgresql database 'employees'
+    public void registerNewEmployee(Employee employee, String password){
+        // Format SQL Statement
+        String sql = "INSERT INTO employees (username, userpassword) VALUES (?, ?)";
 
-        try {
-            // Create file if it doesn't already exist
-            File employeeFile = new File("./src/main/java/com/revature/repository/employee.json");
-            employeeFile.createNewFile();
+        try (Connection con = ConnectionUtil.getConnection()) {
 
-            // Create FileWriter object and write employee to newline (makes it easier for readline on retrieval)
-            FileWriter writer = new FileWriter("./src/main/java/com/revature/repository/employee.json", true);
-            writer.write(newEmployeeJSON + "\n");
-            writer.close();
+            PreparedStatement prstmt = con.prepareStatement(sql);
 
-        // [{},{},{},{}]
+            //Replace '?' with actual value from new employee
+            //1 based indexing ugh
+            prstmt.setString(1, employee.getUsername());
+            prstmt.setString(2, password);
 
-        } catch (JsonGenerationException e) {
-            e.printStackTrace();
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            //execute() method - no return
+            //executeQuery() method - expects return
+            prstmt.execute();
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
-    public String getRegisteredEmployees(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
+    // Returns
+    public HashSet<String> getRegisteredEmployees(){
+        // employeeList - Hash set of usernames
+        HashSet<String> employeeList = new HashSet<String>();
+        String sql = "SELECT username FROM employees";
 
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader("./src/main/java/com/revature/repository/employee.json"));
+        try (Connection con = ConnectionUtil.getConnection()) {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
 
-            while(reader.ready()){
-                sb.append(reader.readLine());
-                sb.append(",");
+            while(rs.next()){
+                employeeList.add(rs.getString(1));
             }
-            reader.close();
-        } catch (IOException e) {
+
+        } catch (SQLException e){
             e.printStackTrace();
         }
-        
-        sb.append("]");
-        
-        return sb.toString().replaceAll(",]$", "]");
+
+        return employeeList;
     }
     
 }

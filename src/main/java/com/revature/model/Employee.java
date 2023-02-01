@@ -1,7 +1,10 @@
 package com.revature.model;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 // import com.revature.service.EmployeeService;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Employee extends User{
     public Employee(String username) {
         super(username);
@@ -9,7 +12,7 @@ public class Employee extends User{
 
     public Employee(){
         super("user_default");
-        System.out.println("Default employee object created");
+        //System.out.println("Default employee object created");
     }
 
     // public void addReimbursementRequest(float amt, String description, int status){
