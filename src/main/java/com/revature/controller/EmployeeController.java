@@ -50,14 +50,7 @@ public class EmployeeController implements HttpHandler {
     }
 
     private void getRequest(HttpExchange exchange) throws IOException{
-        TicketService ts = new TicketService();
-        String jsonCurrentList = ts.populateRequestHistory();
-
-        exchange.sendResponseHeaders(200, jsonCurrentList.getBytes().length);
-
-        OutputStream os = exchange.getResponseBody();
-        os.write(jsonCurrentList.getBytes());
-        os.close();
+        
     }
 
     private void postRequest(HttpExchange exchange) throws IOException{

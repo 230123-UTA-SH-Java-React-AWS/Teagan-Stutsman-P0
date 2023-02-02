@@ -13,6 +13,7 @@ import com.revature.model.Ticket;
 import com.revature.repository.TicketRepository;
 
 public class TicketService {
+    // Submits a new ticket
     public void requestReimbursement(String ticketJSON){
         // TODO: check to make sure this works
         TicketRepository repo = new TicketRepository();
