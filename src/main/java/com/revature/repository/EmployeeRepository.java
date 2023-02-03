@@ -59,18 +59,20 @@ public class EmployeeRepository {
         return employeeList;
     }
 
-    // TODO: Get all the employeeids and usernames instead (Stephen suggestion) and specify logic in EmployeeService
     public User getEmployee(String username){
         User user = new Employee();
-        String sql = "SELECT employeeid, managerstatus FROM employees WHERE username LIKE ?";
+        String sql = "SELECT employeeid, managerstatus FROM employees WHERE username LIKE ?"; //0(1) if serialized fields are like hash tables
 
         try (Connection connection = ConnectionUtil.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, "%" + username + "%");
+
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
+
             user.setEmployeeID(resultSet.getInt(1));
             user.setManagerStatus(ManagerStatus.values()[resultSet.getInt(2)]);
+
         } catch (SQLException e){
             e.printStackTrace();
         }

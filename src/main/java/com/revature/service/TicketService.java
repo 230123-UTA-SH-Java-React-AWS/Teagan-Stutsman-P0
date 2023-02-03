@@ -2,6 +2,7 @@ package com.revature.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
@@ -45,6 +46,13 @@ public class TicketService {
         }
 
         EmployeeRepository employeeRepository = new EmployeeRepository();
+
+        //Check to make sure this user exists
+        HashSet<String> allEmployees = employeeRepository.getRegisteredEmployees();
+        if(!allEmployees.contains(username)){
+            return 4; // Username not recognized
+        }
+
         User user = employeeRepository.getEmployee(username);
 
         if(description.equals("")){

@@ -76,6 +76,10 @@ public class TicketController implements HttpHandler {
                 response = "Ticket Invalid - Zero or No Amount Specified";
                 exchange.sendResponseHeaders(400, response.getBytes().length);
                 break;
+            case 4:
+                response = "Username not recognized - could not submit ticket";
+                exchange.sendResponseHeaders(400, response.getBytes().length);
+                break;
             default:
                 response = "Ticket Invalid - Fields Missing or Corrupted";
                 exchange.sendResponseHeaders(400, response.getBytes().length);
