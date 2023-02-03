@@ -31,16 +31,15 @@ public class TicketController implements HttpHandler {
                 break;
             
             case "PUT":
-                System.out.println("No functionality for put yet...");
-                //putRequest(exchange);
+                putRequest(exchange);
                 break;
             
             case "DELETE":
-                System.out.println("No functionality for delete yet...");
-                //deleteRequest(exchange);
+                deleteRequest(exchange);
                 break;
             
             default:
+                defaultRequest(exchange);
                 System.out.println("Bruh wtf...");
                 break;
 
@@ -60,13 +59,45 @@ public class TicketController implements HttpHandler {
     }
 
     private void postRequest(HttpExchange exchange) throws IOException {   
-
+        String response = "";
         String httpRequestBody = getHttpRequestBody(exchange);
-        ts.requestReimbursement(httpRequestBody);
+        boolean ticketSubmittedSuccess = ts.requestReimbursement(httpRequestBody);
 
-        String response = "Reimbursement ticket submitted (successfully or maybe not)";
-        exchange.sendResponseHeaders(200, response.getBytes().length);
+        if(ticketSubmittedSuccess){
+            response = "Reimbursement Ticket Submitted!";
+            exchange.sendResponseHeaders(200, response.getBytes().length);
+        } else {
+            response = "Ticket Invalid - Could Not Be Submitted";
+            exchange.sendResponseHeaders(400, response.getBytes().length);
+        }
 
+        OutputStream outputStream = exchange.getResponseBody();
+        outputStream.write(response.getBytes());
+        outputStream.close();
+    }
+
+
+    private void putRequest(HttpExchange exchange) throws IOException {
+        // Default is no funcionality unless I add it in later
+        String response = "No functionality for put yet...";
+        exchange.sendResponseHeaders(500, response.getBytes().length);
+        OutputStream outputStream = exchange.getResponseBody();
+        outputStream.write(response.getBytes());
+        outputStream.close();
+    }
+
+
+    private void deleteRequest(HttpExchange exchange) throws IOException {
+        String response = "No functionality for delete yet...";
+        exchange.sendResponseHeaders(500, response.getBytes().length);
+        OutputStream outputStream = exchange.getResponseBody();
+        outputStream.write(response.getBytes());
+        outputStream.close();
+    }
+
+    private void defaultRequest(HttpExchange exchange) throws IOException {
+        String response = "Error processing request";
+        exchange.sendResponseHeaders(500, response.getBytes().length);
         OutputStream outputStream = exchange.getResponseBody();
         outputStream.write(response.getBytes());
         outputStream.close();

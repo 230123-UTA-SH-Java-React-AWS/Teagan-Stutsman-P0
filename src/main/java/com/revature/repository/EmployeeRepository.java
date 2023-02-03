@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.revature.model.Employee;
+import com.revature.model.User;
+import com.revature.model.User.ManagerStatus;
 import com.revature.util.ConnectionUtil;
 
 // Repository layer is responsible for interacting w/ database + sending/receiving info from database
@@ -57,20 +59,21 @@ public class EmployeeRepository {
     }
 
     // TODO: Get all the employeeids and usernames instead (Stephen suggestion) and specify logic in EmployeeService
-    public int getEmployeeID(String username){
-        int employeeID = 0;
-        String sql = "SELECT employeeid FROM employees WHERE username LIKE ?";
+    public User getEmployee(String username){
+        User user = new Employee();
+        String sql = "SELECT employeeid, managerstatus FROM employees WHERE username LIKE ?";
 
         try (Connection connection = ConnectionUtil.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, "%" + username + "%");
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            employeeID = resultSet.getInt(1);
+            user.setEmployeeID(resultSet.getInt(1));
+            user.setManagerStatus(ManagerStatus.values()[resultSet.getInt(2)]);
         } catch (SQLException e){
             e.printStackTrace();
         }
-        return employeeID;
+        return user;
     }
 
     public HashMap<String, String> getEmployeePasswords(){

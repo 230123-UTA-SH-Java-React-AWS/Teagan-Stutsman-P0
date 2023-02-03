@@ -10,6 +10,8 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.revature.model.Ticket;
+import com.revature.model.User;
+import com.revature.model.User.ManagerStatus;
 import com.revature.repository.EmployeeRepository;
 import com.revature.repository.TicketRepository;
 
@@ -18,7 +20,7 @@ public class TicketService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // Submits a new ticket
-    public void requestReimbursement(String ticketJSON){
+    public boolean requestReimbursement(String ticketJSON){
         int employeeID = 0;
         float amount = 0.0f;
         String description = "";
@@ -32,14 +34,18 @@ public class TicketService {
 
         } catch (JsonParseException e){
             e.printStackTrace();
+            return false;
         } catch (JsonMappingException e){
             e.printStackTrace();
+            return false;
         } catch (IOException e){
             e.printStackTrace();
+            return false;
         }
 
 
         ticketRepository.submitNewTicket(employeeID, amount, description);
+        return true;
     }
 
     //Returns a JSON String of Tickets the current User created
@@ -61,10 +67,12 @@ public class TicketService {
 
         EmployeeRepository employeeRepository = new EmployeeRepository();
         // Gets the id from the username
-        int employeeID = employeeRepository.getEmployeeID(username);
+        User user = employeeRepository.getEmployee(username);
 
-        // Filters out tickets that don't belong to this employee
-        ticketList.removeIf(t -> t.getEmployeeID() != employeeID);
+        if(!user.getManagerStatus().equals(ManagerStatus.MANAGER)){
+            // Filters out tickets that don't belong to this employee
+            ticketList.removeIf(t -> t.getEmployeeID() != user.getEmployeeID());
+        } // else - Print all tickets
 
         // Translates Ticket List to JSON String
         return jsonStringify(ticketList);
