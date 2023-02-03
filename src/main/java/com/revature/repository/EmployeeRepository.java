@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import com.revature.model.Employee;
@@ -55,6 +56,7 @@ public class EmployeeRepository {
         return employeeList;
     }
 
+    // TODO: Get all the employeeids and usernames instead (Stephen suggestion) and specify logic in EmployeeService
     public int getEmployeeID(String username){
         int employeeID = 0;
         String sql = "SELECT employeeid FROM employees WHERE username LIKE ?";
@@ -70,5 +72,21 @@ public class EmployeeRepository {
         }
         return employeeID;
     }
-    
+
+    public HashMap<String, String> getEmployeePasswords(){
+        HashMap<String, String> employeePasswords = new HashMap<String, String>();
+        String sql = "SELECT username, userpassword FROM employees";
+
+        try (Connection connection = ConnectionUtil.getConnection()) {
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while(rs.next()){
+                employeePasswords.put(rs.getString(1), rs.getString(2));
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return employeePasswords;
+    }
 }

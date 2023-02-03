@@ -1,6 +1,7 @@
 package com.revature.service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.codehaus.jackson.JsonNode;
@@ -29,14 +30,6 @@ public class EmployeeService {
             JsonNode node = objectMapper.readTree(employeeJSON);
             username = node.get("username").asText();
             password = node.get("password").asText();
-
-            if(!listAllEmployees.contains(username)){
-                // Send newEmployee to repository to be stored in the database
-                Employee employee = new Employee(username);
-                employeeRepository.registerNewEmployee(employee, password);
-            } else {
-                System.out.println("--- employee already registered --- new employee not created ---");
-            }
             
         } catch (JsonParseException e) {
               e.printStackTrace();
@@ -45,10 +38,39 @@ public class EmployeeService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        if(!listAllEmployees.contains(username)){
+            // Send newEmployee to repository to be stored in the database
+            Employee employee = new Employee(username);
+            employeeRepository.registerNewEmployee(employee, password);
+        } else {
+            System.out.println("--- employee already registered --- new employee not created ---");
+        }
     }
 
-    // TODO: validate password matches username given
-    public void loginEmployee(String employeeJSON){
+    // Returns true if the password matches the username
+    public boolean loginEmployee(String employeeJSON){
+        HashMap<String, String> employeePasswords = employeeRepository.getEmployeePasswords();
+        String username = "";
+        String password = "";
+        
+        try {
+            // Converts JSON employee into Employee object
+            JsonNode node = objectMapper.readTree(employeeJSON);
+            username = node.get("username").asText();
+            password = node.get("password").asText();
+            
+        } catch (JsonParseException e) {
+              e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        if(employeePasswords.get(username).equals(password)){
+            return true;
+        }
+        return false;
     }
 }
