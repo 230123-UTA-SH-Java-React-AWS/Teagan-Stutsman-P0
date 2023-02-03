@@ -17,7 +17,7 @@ public class EmployeeRepository {
     // Stores employees in postgresql database 'employees'
     public void registerNewEmployee(Employee employee, String password){
         // Format SQL Statement
-        String sql = "INSERT INTO employees (username, userpassword) VALUES (?, ?)";
+        String sql = "INSERT INTO employees (username, userpassword, managerstatus) VALUES (?, ?, ?)";
 
         try (Connection con = ConnectionUtil.getConnection()) {
 
@@ -27,6 +27,7 @@ public class EmployeeRepository {
             //1 based indexing ugh
             prstmt.setString(1, employee.getUsername());
             prstmt.setString(2, password);
+            prstmt.setInt(3, employee.getManagerStatus().getValue());
 
             //execute() method - no return
             //executeQuery() method - expects return

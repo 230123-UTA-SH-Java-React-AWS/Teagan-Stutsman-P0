@@ -54,7 +54,7 @@ public class EmployeeService {
 
 
     // Returns true if the password matches the username
-    public boolean loginEmployee(String employeeJSON){
+    public int loginEmployee(String employeeJSON){
         HashMap<String, String> employeePasswords = employeeRepository.getEmployeePasswords();
         String username = "";
         String password = "";
@@ -67,22 +67,30 @@ public class EmployeeService {
             
         } catch (JsonParseException e) {
               e.printStackTrace();
+              return 3; // Exception Failure
         } catch (JsonMappingException e) {
             e.printStackTrace();
+            return 3; // Exception Failure
         } catch (IOException e) {
             e.printStackTrace();
+            return 3; // Exception Failure
+        }
+
+        if(!employeePasswords.containsKey(username)){
+            return 2; // No username registered failure
         }
 
         if(employeePasswords.get(username).equals(password)){
-            return true;
+            return 0;
         }
-        return false;
+
+        return 1; // Password incorrect failure
     }
 
 
     // Returns true if the old password was correct
     public boolean changeEmployeePassword(String employeeJSON){
-        if(loginEmployee(employeeJSON)){
+        if(loginEmployee(employeeJSON) == 0){
             String newPassword = "";
             String username = "";
 

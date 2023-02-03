@@ -52,14 +52,23 @@ public class EmployeeController implements HttpHandler {
         String httpRequestBody = getHttpRequestBody(exchange);
         String outgoingMessage = "";
 
-        boolean logInSuccess = employeeService.loginEmployee(httpRequestBody);
+        int logInSuccess = employeeService.loginEmployee(httpRequestBody);
 
-        if(logInSuccess){
-            outgoingMessage = "You're Logged In! Welcome"; // Bonus if i can get the username here haha
-            exchange.sendResponseHeaders(200, outgoingMessage.getBytes().length);
-        } else {
-            outgoingMessage = "Invalid Username or Password";
-            exchange.sendResponseHeaders(401, outgoingMessage.getBytes().length);
+        switch (logInSuccess) {
+            case 0:
+                outgoingMessage = "You're Logged In! Welcome"; // Bonus if i can get the username here haha
+                exchange.sendResponseHeaders(200, outgoingMessage.getBytes().length);
+                break;
+            case 1:
+                outgoingMessage = "Invalid Password";
+                exchange.sendResponseHeaders(401, outgoingMessage.getBytes().length);
+                break;
+            case 2:
+                outgoingMessage = "Error - Username Not Recognized";
+                exchange.sendResponseHeaders(401, outgoingMessage.getBytes().length);
+                break;
+            default:
+                break;
         }
 
         OutputStream outputStream = exchange.getResponseBody();
