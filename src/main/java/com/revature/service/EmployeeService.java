@@ -19,8 +19,10 @@ public class EmployeeService {
     // Jackson for JSON
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+
+
     // Recieves JSON String from Controller calls Repo layer method
-    public void registerEmployee(String employeeJSON){
+    public boolean registerEmployee(String employeeJSON){
         HashSet<String> listAllEmployees = employeeRepository.getRegisteredEmployees();
         String username = "";
         String password = "";
@@ -43,10 +45,13 @@ public class EmployeeService {
             // Send newEmployee to repository to be stored in the database
             Employee employee = new Employee(username);
             employeeRepository.registerNewEmployee(employee, password);
-        } else {
-            System.out.println("--- employee already registered --- new employee not created ---");
+            return true;
         }
+            
+        System.out.println("--- employee already registered --- new employee not created ---");
+        return false;
     }
+
 
     // Returns true if the password matches the username
     public boolean loginEmployee(String employeeJSON){
@@ -69,6 +74,33 @@ public class EmployeeService {
         }
 
         if(employeePasswords.get(username).equals(password)){
+            return true;
+        }
+        return false;
+    }
+
+
+    // Returns true if the old password was correct
+    public boolean changeEmployeePassword(String employeeJSON){
+        if(loginEmployee(employeeJSON)){
+            String newPassword = "";
+            String username = "";
+
+            try {
+                // Converts JSON employee into Employee object
+                JsonNode node = objectMapper.readTree(employeeJSON);
+                newPassword = node.get("newPassword").asText();
+                username = node.get("username").asText();
+                
+            } catch (JsonParseException e) {
+                  e.printStackTrace();
+            } catch (JsonMappingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            employeeRepository.changeEmployeePassword(username, newPassword);
             return true;
         }
         return false;

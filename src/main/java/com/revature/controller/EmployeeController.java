@@ -16,6 +16,7 @@ import com.revature.service.EmployeeService;
 
 
 public class EmployeeController implements HttpHandler {
+    EmployeeService employeeService = new EmployeeService();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -32,13 +33,11 @@ public class EmployeeController implements HttpHandler {
                 break;
             
             case "PUT":
-                System.out.println("No functionality for put yet...");
-                //putRequest(exchange);
+                putRequest(exchange);
                 break;
             
             case "DELETE":
-                System.out.println("No functionality for delete yet...");
-                //deleteRequest(exchange);
+                deleteRequest(exchange);
                 break;
             
             default:
@@ -48,46 +47,88 @@ public class EmployeeController implements HttpHandler {
         }
     }
 
+    // Will be used to login user
     private void getRequest(HttpExchange exchange) throws IOException{
+        String httpRequestBody = getHttpRequestBody(exchange);
+        String outgoingMessage = "";
+
+        boolean logInSuccess = employeeService.loginEmployee(httpRequestBody);
+
+        if(logInSuccess){
+            outgoingMessage = "You're Logged In! Welcome"; // Bonus if i can get the username here haha
+            exchange.sendResponseHeaders(200, outgoingMessage.getBytes().length);
+        } else {
+            outgoingMessage = "Invalid Username or Password";
+            exchange.sendResponseHeaders(401, outgoingMessage.getBytes().length);
+        }
+
+        OutputStream outputStream = exchange.getResponseBody();
+        outputStream.write(outgoingMessage.getBytes());
+        outputStream.close();
+    }
+
+    // Creates a new user
+    private void postRequest(HttpExchange exchange) throws IOException{
+        String httpRequestBody = getHttpRequestBody(exchange);
+        String outgoingMessage = "";
+
+        // Calls save employee method (param: JSON String)
+        boolean registrationSuccess = employeeService.registerEmployee(httpRequestBody);
+
+        if(registrationSuccess){
+            outgoingMessage = "You're Registered! Welcome";
+            exchange.sendResponseHeaders(200, outgoingMessage.getBytes().length);
+        } else {
+            outgoingMessage = "Username Already Taken";
+            exchange.sendResponseHeaders(409, outgoingMessage.getBytes().length);
+        }
+
+        OutputStream os = exchange.getResponseBody();
+        os.write(outgoingMessage.getBytes());
+        os.close();
 
     }
 
-    private void postRequest(HttpExchange exchange) throws IOException{
-        
-        // InputStream has bytes instead of Strings
-        InputStream is = exchange.getRequestBody();
+    // Will be used to update employee passwords
+    private void putRequest(HttpExchange exchange) throws IOException{
+        String httpRequestBody = getHttpRequestBody(exchange);
+        String outgoingMessage = "";
 
-        // Convert InputStream to String
-        // StringBuilder is like a mutable version of a String
-        StringBuilder textBuilder = new StringBuilder();
+        boolean passwordChangeSuccess = employeeService.changeEmployeePassword(httpRequestBody);
 
-        // Convert our binary to letters
-        // try_resource block automatically closes the resource in the parenthesis
-        try(Reader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())))) {
+        if(passwordChangeSuccess){
+            outgoingMessage = "Password Successfully Changed";
+            exchange.sendResponseHeaders(409, outgoingMessage.getBytes().length);
+        } else {
+            outgoingMessage = "Password Change Failed";
+            exchange.sendResponseHeaders(409, outgoingMessage.getBytes().length);
+        }
+
+        OutputStream outputStream = exchange.getResponseBody();
+        outputStream.write(outgoingMessage.getBytes());
+        outputStream.close();
+    }
+
+    // Will be using this request to remove an existing employee
+    private void deleteRequest(HttpExchange exchange) throws IOException{
+        System.out.println("No functionality for delete yet...");
+    }
+    
+    // Helper method to translate RequestBody from bytes to String
+    private String getHttpRequestBody(HttpExchange exchange) throws IOException {
+        InputStream inputStream = exchange.getRequestBody();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try (Reader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
             int c = 0;
 
             // read() gives '-1' once there are no letters left
             while((c = reader.read()) != -1){
                 // Adds the letter to your text
-                textBuilder.append((char)c);
+                stringBuilder.append((char)c);
             }
         }
-        // Creates service layer object
-        EmployeeService es = new EmployeeService();
 
-        // Calls save employee method (param: JSON String)
-        es.registerEmployee(textBuilder.toString());
-
-        String outgoingMessage = "You sent us a new user";
-        //exchange.sendResponseHeaders(200, textBuilder.toString().getBytes().length);
-        // TODO: send different status codes based on whether the user was saved or not
-        exchange.sendResponseHeaders(200, outgoingMessage.getBytes().length);
-
-        OutputStream os = exchange.getResponseBody();
-        //os.write(textBuilder.toString().getBytes());
-        os.write(outgoingMessage.getBytes());
-        os.close();
-
+        return stringBuilder.toString();
     }
-    
 }
