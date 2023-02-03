@@ -13,7 +13,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import com.revature.service.EmployeeService;
-import com.revature.service.TicketService;
 
 
 public class EmployeeController implements HttpHandler {
@@ -50,7 +49,7 @@ public class EmployeeController implements HttpHandler {
     }
 
     private void getRequest(HttpExchange exchange) throws IOException{
-        
+
     }
 
     private void postRequest(HttpExchange exchange) throws IOException{
@@ -73,18 +72,16 @@ public class EmployeeController implements HttpHandler {
                 textBuilder.append((char)c);
             }
         }
-
-        String outgoingMessage = "You sent us a new user";
-        //exchange.sendResponseHeaders(200, textBuilder.toString().getBytes().length);
-        exchange.sendResponseHeaders(200, outgoingMessage.getBytes().length);
-
-        // Don't forget service layer call
-
         // Creates service layer object
         EmployeeService es = new EmployeeService();
 
         // Calls save employee method (param: JSON String)
         es.registerEmployee(textBuilder.toString());
+
+        String outgoingMessage = "You sent us a new user";
+        //exchange.sendResponseHeaders(200, textBuilder.toString().getBytes().length);
+        // TODO: send different status codes based on whether the user was saved or not
+        exchange.sendResponseHeaders(200, outgoingMessage.getBytes().length);
 
         OutputStream os = exchange.getResponseBody();
         //os.write(textBuilder.toString().getBytes());

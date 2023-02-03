@@ -3,12 +3,14 @@ package com.revature.model;
 public class Ticket {
     public enum Status {PENDING, APPROVED, DENIED}
 
+    private int ticketID;
     private int employeeID;
     private float amount;
     private String description;
     private Status status;
 
-    public Ticket(int employeeID, float amount, String description, Status status){
+    public Ticket(int ticketID, int employeeID, float amount, String description, Status status){
+        this.ticketID = ticketID;
         this.employeeID = employeeID;
         this.amount = amount;
         this.description = description;
@@ -38,5 +40,11 @@ public class Ticket {
     }
     public void setEmployeeID(int employeeID) {
         this.employeeID = employeeID;
+    }
+    public int getTicketID() {
+        return ticketID;
+    }
+    public void setTicketID(int ticketID) {
+        this.ticketID = ticketID;
     }
 }

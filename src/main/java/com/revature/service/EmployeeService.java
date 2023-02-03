@@ -13,27 +13,27 @@ import com.revature.repository.EmployeeRepository;
 
 // Service layer responsible for holding behavior-driven classes
 public class EmployeeService {
+    // Create repo layer object
+    private final EmployeeRepository employeeRepository = new EmployeeRepository();
+    // Jackson for JSON
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     // Recieves JSON String from Controller calls Repo layer method
     public void registerEmployee(String employeeJSON){
-        // Create repo layer object
-        EmployeeRepository repo = new EmployeeRepository();
-        HashSet<String> listAllEmployees = repo.getRegisteredEmployees();
+        HashSet<String> listAllEmployees = employeeRepository.getRegisteredEmployees();
         String username = "";
         String password = "";
 
-        // Jackson for JSON
-        ObjectMapper mapper = new ObjectMapper();
-
         try {
             // Converts JSON employee into Employee object
-            JsonNode node = mapper.readTree(employeeJSON);
+            JsonNode node = objectMapper.readTree(employeeJSON);
             username = node.get("username").asText();
             password = node.get("password").asText();
 
             if(!listAllEmployees.contains(username)){
                 // Send newEmployee to repository to be stored in the database
                 Employee employee = new Employee(username);
-                repo.registerNewEmployee(employee, password);
+                employeeRepository.registerNewEmployee(employee, password);
             } else {
                 System.out.println("--- employee already registered --- new employee not created ---");
             }

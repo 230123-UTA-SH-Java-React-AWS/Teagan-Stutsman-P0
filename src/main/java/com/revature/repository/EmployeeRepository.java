@@ -54,5 +54,21 @@ public class EmployeeRepository {
 
         return employeeList;
     }
+
+    public int getEmployeeID(String username){
+        int employeeID = 0;
+        String sql = "SELECT employeeid FROM employees WHERE username LIKE ?";
+
+        try (Connection connection = ConnectionUtil.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, "%" + username + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            employeeID = resultSet.getInt(1);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return employeeID;
+    }
     
 }
