@@ -87,18 +87,29 @@ public class TicketController implements HttpHandler {
         outputStream.close();
     }
 
-    // TODO: Managers should be allowed to update request status
+    // Update request status
     private void putRequest(HttpExchange exchange) throws IOException {
         String response = "";
         String httpRequestBody = getHttpRequestBody(exchange);
-        boolean statusUpdateSuccess = ts.updateRequestStatus(httpRequestBody);
+        int statusUpdateSuccess = ts.updateRequestStatus(httpRequestBody);
 
-        if(statusUpdateSuccess){
-            response = "Ticket Status Successfully Updated"; // Could create custom messages for approved/denied
-            exchange.sendResponseHeaders(200, response.getBytes().length);
-        } else {
-            response = "You do not have permissions to approve/deny tickets";
-            exchange.sendResponseHeaders(500, response.getBytes().length);
+        switch (statusUpdateSuccess) {
+            case 0:
+                response = "Ticket Status Successfully Updated"; // Could create custom messages for approved/denied
+                exchange.sendResponseHeaders(200, response.getBytes().length);
+                break;
+            case 1:
+                response = "Ticket Status cannot be changed after approval/denial";
+                exchange.sendResponseHeaders(200, response.getBytes().length);
+                break;
+            case 2:
+                response = "You do not have permissions to approve/deny tickets";
+                exchange.sendResponseHeaders(500, response.getBytes().length);
+                break;
+            default:
+                response = "You do not have permissions to approve/deny tickets";
+                exchange.sendResponseHeaders(500, response.getBytes().length);
+                break;
         }
         OutputStream outputStream = exchange.getResponseBody();
         outputStream.write(response.getBytes());

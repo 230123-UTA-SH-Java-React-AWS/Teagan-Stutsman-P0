@@ -28,6 +28,9 @@ public class Ticket {
         this.status = status;
     }
 
+    public Ticket(){
+    }
+
     public float getAmount() {
         return amount;
     }

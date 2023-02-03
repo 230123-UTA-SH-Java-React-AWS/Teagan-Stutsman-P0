@@ -87,7 +87,7 @@ public class TicketService {
         return jsonStringify(ticketList);
     }
 
-    public boolean updateRequestStatus(String requestJSON){
+    public int updateRequestStatus(String requestJSON){
         String username;
         int ticketID;
         Ticket.Status status;
@@ -100,24 +100,32 @@ public class TicketService {
 
         } catch (JsonParseException e){
             e.printStackTrace();
-            return false;
+            return 3;
         } catch (JsonMappingException e){
             e.printStackTrace();
-            return false;
+            return 3;
         } catch (IOException e){
             e.printStackTrace();
-            return false;
+            return 3; // 3 - Exception
         }
         
         EmployeeRepository employeeRepository = new EmployeeRepository();
         User user = employeeRepository.getEmployee(username);
 
-        if(user.getManagerStatus().equals(ManagerStatus.MANAGER)) {
-            ticketRepository.updateTicketStatus(ticketID, status);
-            return true;
-        } // else - not a manager and cannot update ticket status
+        Ticket ticket = ticketRepository.getOneTicket(ticketID);
 
-        return false;
+        boolean userIsManager = user.getManagerStatus().equals(ManagerStatus.MANAGER);
+        boolean ticketIsPending = ticket.getStatus().equals(Ticket.Status.PENDING);
+
+        if(userIsManager && ticketIsPending) {
+            ticketRepository.updateTicketStatus(ticketID, status);
+            return 0; // Status changed :)
+        } else if (userIsManager) {
+            // ticket status cannot be changed after approval/denial(1)
+            return 1;
+        }// else - not a manager(2) and cannot update ticket status
+
+        return 2;
     }
 
     // Translates ArrayLists into JSON Strings
