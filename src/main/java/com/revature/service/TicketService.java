@@ -20,32 +20,41 @@ public class TicketService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // Submits a new ticket
-    public boolean requestReimbursement(String ticketJSON){
-        int employeeID = 0;
-        float amount = 0.0f;
-        String description = "";
+    public int requestReimbursement(String ticketJSON){
+        String username, description;
+        float amount;
 
         try {
-
+            
             JsonNode node = objectMapper.readTree(ticketJSON);
-            employeeID = node.get("employeeid").getIntValue();
+            username = node.get("username").asText();
             amount = Float.parseFloat(node.get("amount").asText());
             description = node.get("description").asText();
 
+        } catch (NumberFormatException e){
+            return 2;
         } catch (JsonParseException e){
             e.printStackTrace();
-            return false;
+            return 3;
         } catch (JsonMappingException e){
             e.printStackTrace();
-            return false;
+            return 3;
         } catch (IOException e){
             e.printStackTrace();
-            return false;
+            return 3;
         }
 
+        EmployeeRepository employeeRepository = new EmployeeRepository();
+        User user = employeeRepository.getEmployee(username);
 
-        ticketRepository.submitNewTicket(employeeID, amount, description);
-        return true;
+        if(description.equals("")){
+            return 1;
+        } else if (amount < 0.01f){
+            return 2;
+        }
+
+        ticketRepository.submitNewTicket(user.getEmployeeID(), amount, description);
+        return 0;
     }
 
     //Returns a JSON String of Tickets the current User created
@@ -76,6 +85,39 @@ public class TicketService {
 
         // Translates Ticket List to JSON String
         return jsonStringify(ticketList);
+    }
+
+    public boolean updateRequestStatus(String requestJSON){
+        String username;
+        int ticketID;
+        Ticket.Status status;
+
+        try {
+            JsonNode node = objectMapper.readTree(requestJSON);
+            username = node.get("username").asText();
+            ticketID = node.get("ticketid").asInt();
+            status = Ticket.Status.values()[node.get("newStatus").asInt()];
+
+        } catch (JsonParseException e){
+            e.printStackTrace();
+            return false;
+        } catch (JsonMappingException e){
+            e.printStackTrace();
+            return false;
+        } catch (IOException e){
+            e.printStackTrace();
+            return false;
+        }
+        
+        EmployeeRepository employeeRepository = new EmployeeRepository();
+        User user = employeeRepository.getEmployee(username);
+
+        if(user.getManagerStatus().equals(ManagerStatus.MANAGER)) {
+            ticketRepository.updateTicketStatus(ticketID, status);
+            return true;
+        } // else - not a manager and cannot update ticket status
+
+        return false;
     }
 
     // Translates ArrayLists into JSON Strings

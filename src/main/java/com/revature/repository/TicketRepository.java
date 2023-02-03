@@ -54,4 +54,19 @@ public class TicketRepository {
 
         return ticketList;
     }
+
+    public void updateTicketStatus(int ticketID, Ticket.Status status){
+        String sql = "UPDATE tickets SET status = ? WHERE ticketid = ?";
+
+        try (Connection connection = ConnectionUtil.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, status.getValue());
+            preparedStatement.setInt(2, ticketID);
+
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

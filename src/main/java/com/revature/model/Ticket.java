@@ -1,7 +1,18 @@
 package com.revature.model;
 
 public class Ticket {
-    public enum Status {PENDING, APPROVED, DENIED}
+    public enum Status {
+        PENDING(0), APPROVED(1), DENIED(2);
+
+        private final int value;
+        private Status(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
 
     private int ticketID;
     private int employeeID;

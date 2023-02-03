@@ -61,14 +61,25 @@ public class TicketController implements HttpHandler {
     private void postRequest(HttpExchange exchange) throws IOException {   
         String response = "";
         String httpRequestBody = getHttpRequestBody(exchange);
-        boolean ticketSubmittedSuccess = ts.requestReimbursement(httpRequestBody);
+        int ticketSubmittedCode = ts.requestReimbursement(httpRequestBody);
 
-        if(ticketSubmittedSuccess){
-            response = "Reimbursement Ticket Submitted!";
-            exchange.sendResponseHeaders(200, response.getBytes().length);
-        } else {
-            response = "Ticket Invalid - Could Not Be Submitted";
-            exchange.sendResponseHeaders(400, response.getBytes().length);
+        switch (ticketSubmittedCode) {
+            case 0:
+                response = "Reimbursement Ticket Submitted!";
+                exchange.sendResponseHeaders(200, response.getBytes().length);
+                break;
+            case 1:
+                response = "Ticket Invalid - Description Field Empty";
+                exchange.sendResponseHeaders(400, response.getBytes().length);
+                break;
+            case 2:
+                response = "Ticket Invalid - Zero or No Amount Specified";
+                exchange.sendResponseHeaders(400, response.getBytes().length);
+                break;
+            default:
+                response = "Ticket Invalid - Fields Missing or Corrupted";
+                exchange.sendResponseHeaders(400, response.getBytes().length);
+                break;
         }
 
         OutputStream outputStream = exchange.getResponseBody();
@@ -76,11 +87,19 @@ public class TicketController implements HttpHandler {
         outputStream.close();
     }
 
-
+    // TODO: Managers should be allowed to update request status
     private void putRequest(HttpExchange exchange) throws IOException {
-        // Default is no funcionality unless I add it in later
-        String response = "No functionality for put yet...";
-        exchange.sendResponseHeaders(500, response.getBytes().length);
+        String response = "";
+        String httpRequestBody = getHttpRequestBody(exchange);
+        boolean statusUpdateSuccess = ts.updateRequestStatus(httpRequestBody);
+
+        if(statusUpdateSuccess){
+            response = "Ticket Status Successfully Updated"; // Could create custom messages for approved/denied
+            exchange.sendResponseHeaders(200, response.getBytes().length);
+        } else {
+            response = "You do not have permissions to approve/deny tickets";
+            exchange.sendResponseHeaders(500, response.getBytes().length);
+        }
         OutputStream outputStream = exchange.getResponseBody();
         outputStream.write(response.getBytes());
         outputStream.close();
