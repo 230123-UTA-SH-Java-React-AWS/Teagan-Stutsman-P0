@@ -73,11 +73,19 @@ public class TicketService {
     public String populateRequestHistory(String usernameJSON){
         ArrayList<Ticket> ticketList = ticketRepository.getAllTickets();
         String username = "";
+        Ticket.Status ticketStatus = Ticket.Status.PENDING;
+        boolean filterByStatus = false;
 
         // Gets our fields from JSON String
         try {
             JsonNode node = objectMapper.readTree(usernameJSON);
             username = node.get("username").asText();
+
+            if(node.findValue("ticketStatus") != null){
+                filterByStatus = true;
+                ticketStatus = Ticket.Status.valueOf(node.get("ticketStatus").asText());
+            }
+            
         }   catch (JsonParseException e){
             e.printStackTrace();
         } catch (JsonMappingException e){
@@ -94,6 +102,12 @@ public class TicketService {
             // Filters out tickets that don't belong to this employee
             ticketList.removeIf(t -> t.getEmployeeID() != user.getEmployeeID());
         } // else - Print all tickets
+
+        if(filterByStatus){
+            // Filters out status that aren't requested
+            final Ticket.Status compareStatus = ticketStatus; // compare value needs to be final
+            ticketList.removeIf(t -> !compareStatus.equals(t.getStatus()));
+        }
 
         // Add username to ticket
         HashMap<Integer, String> employeesByID = employeeRepository.getEmployeesByID();
@@ -112,7 +126,7 @@ public class TicketService {
             JsonNode node = objectMapper.readTree(requestJSON);
             username = node.get("username").asText();
             ticketID = node.get("ticketid").asInt();
-            status = Ticket.Status.values()[node.get("newStatus").asInt()];
+            status = Ticket.Status.valueOf(node.get("newStatus").asText());
 
         } catch (JsonParseException e){
             e.printStackTrace();
