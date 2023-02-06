@@ -15,11 +15,23 @@ public class Ticket {
     }
 
     private int ticketID;
+    private String username;
     private int employeeID;
     private float amount;
     private String description;
     private Status status;
 
+    // Username option
+    // public Ticket(int ticketID, int employeeID, float amount, String description, Status status, String username){
+    //     this.ticketID = ticketID;
+    //     this.employeeID = employeeID;
+    //     this.amount = amount;
+    //     this.description = description;
+    //     this.status = status;
+    //     this.username = username;
+    // }
+
+    // No username option
     public Ticket(int ticketID, int employeeID, float amount, String description, Status status){
         this.ticketID = ticketID;
         this.employeeID = employeeID;
@@ -28,6 +40,7 @@ public class Ticket {
         this.status = status;
     }
 
+    // Empty Option
     public Ticket(){
     }
 
@@ -60,5 +73,12 @@ public class Ticket {
     }
     public void setTicketID(int ticketID) {
         this.ticketID = ticketID;
+    }
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

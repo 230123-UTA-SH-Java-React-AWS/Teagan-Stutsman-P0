@@ -2,19 +2,23 @@ package com.revature.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.module.SimpleModule;
 
 import com.revature.model.Ticket;
 import com.revature.model.User;
 import com.revature.model.User.ManagerStatus;
 import com.revature.repository.EmployeeRepository;
 import com.revature.repository.TicketRepository;
+import com.revature.util.TicketOutputSerializer;
 
 public class TicketService {
     private final TicketRepository ticketRepository = new TicketRepository();
@@ -91,6 +95,10 @@ public class TicketService {
             ticketList.removeIf(t -> t.getEmployeeID() != user.getEmployeeID());
         } // else - Print all tickets
 
+        // Add username to ticket
+        HashMap<Integer, String> employeesByID = employeeRepository.getEmployeesByID();
+        ticketList.forEach(t -> t.setUsername(employeesByID.get(t.getEmployeeID())));
+
         // Translates Ticket List to JSON String
         return jsonStringify(ticketList);
     }
@@ -139,6 +147,12 @@ public class TicketService {
     // Translates ArrayLists into JSON Strings
     private String jsonStringify(ArrayList<Ticket> listOfTickets){
         String jsonString = "";
+
+        // Implements Custom Ticket Serializer from util
+        SimpleModule module = new SimpleModule("TicketOutputSerializer", new Version(1, 0, 0, null));
+        module.addSerializer(Ticket.class, new TicketOutputSerializer());
+        objectMapper.registerModule(module);
+
         try {
             jsonString = objectMapper.writeValueAsString(listOfTickets);
         } catch (JsonGenerationException e) {
