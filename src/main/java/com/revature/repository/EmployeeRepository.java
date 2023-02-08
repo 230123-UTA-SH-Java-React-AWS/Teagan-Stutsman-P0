@@ -130,19 +130,34 @@ public class EmployeeRepository {
         return employeePasswords;
     }
 
-    public void changeEmployeePassword(String username, String newPassword){
-        String sql = "UPDATE employees SET userpassword=? WHERE username=?";
+    public void changeEmployeeManagerStatus(String username, ManagerStatus managerStatus){
+        String sql = "UPDATE employees SET managerstatus = ? WHERE username = ?";
 
-        try (Connection connection = ConnectionUtil.getConnection()) {
-
+        try(Connection connection = ConnectionUtil.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
-            preparedStatement.setString(1, newPassword);
+            preparedStatement.setInt(1, managerStatus.getValue());
             preparedStatement.setString(2, username);
             preparedStatement.execute();
 
-        } catch (Exception e) {
+        } catch (SQLException e){
             e.printStackTrace();
         }
     }
+
+    // public void changeEmployeePassword(String username, String newPassword){
+    //     String sql = "UPDATE employees SET userpassword=? WHERE username=?";
+
+    //     try (Connection connection = ConnectionUtil.getConnection()) {
+
+    //         PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+    //         preparedStatement.setString(1, newPassword);
+    //         preparedStatement.setString(2, username);
+    //         preparedStatement.execute();
+
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 }

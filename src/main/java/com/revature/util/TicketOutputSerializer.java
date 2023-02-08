@@ -26,6 +26,7 @@ public class TicketOutputSerializer extends SerializerBase<Ticket> {
             jsonGenerator.writeNumberField("ticketid", ticket.getTicketID());
             jsonGenerator.writeStringField("username", ticket.getUsername());
             jsonGenerator.writeNumberField("amount", ticket.getAmount());;
+            jsonGenerator.writeStringField("reimbursementType", ticket.getReimbursementType().name());
             jsonGenerator.writeStringField("description", ticket.getDescription());
             jsonGenerator.writeStringField("status", ticket.getStatus().name());
             jsonGenerator.writeEndObject();

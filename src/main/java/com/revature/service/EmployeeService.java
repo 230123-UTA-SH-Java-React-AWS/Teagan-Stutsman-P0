@@ -6,10 +6,13 @@ import java.util.HashSet;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.revature.model.Employee;
+import com.revature.model.User;
+import com.revature.model.User.ManagerStatus;
 import com.revature.repository.EmployeeRepository;
 
 // Service layer responsible for holding behavior-driven classes
@@ -87,30 +90,63 @@ public class EmployeeService {
         return 1; // Password incorrect failure
     }
 
+    public boolean changeEmployee(String employeeJSON){
+        String username1 = "";
+        String username2 = "";
+        ManagerStatus newStatus = ManagerStatus.EMPLOYEE;
 
-    // Returns true if the old password was correct
-    public boolean changeEmployeePassword(String employeeJSON){
-        if(loginEmployee(employeeJSON) == 0){
-            String newPassword = "";
-            String username = "";
+        try {
+            JsonNode node = objectMapper.readTree(employeeJSON);
+            username1 = node.get("managerName").asText();
+            username2 = node.get("employeeName").asText();
+            newStatus = ManagerStatus.valueOf(node.get("newManagerStatus").asText());
 
-            try {
-                // Converts JSON employee into Employee object
-                JsonNode node = objectMapper.readTree(employeeJSON);
-                newPassword = node.get("newPassword").asText();
-                username = node.get("username").asText();
-                
-            } catch (JsonParseException e) {
-                  e.printStackTrace();
-            } catch (JsonMappingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+            return false;
+        } catch (JsonMappingException e){
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
 
-            employeeRepository.changeEmployeePassword(username, newPassword);
+        User manager = employeeRepository.getEmployee(username1);
+
+        if(manager.getManagerStatus().equals(ManagerStatus.MANAGER)){
+            employeeRepository.changeEmployeeManagerStatus(username2, newStatus);
             return true;
         }
+
         return false;
     }
+
+
+    // Returns true if the old password was correct
+    // public boolean changeEmployeePassword(String employeeJSON){
+    //     if(loginEmployee(employeeJSON) == 0){
+    //         String newPassword = "";
+    //         String username = "";
+
+    //         try {
+    //             // Converts JSON employee into Employee object
+    //             JsonNode node = objectMapper.readTree(employeeJSON);
+    //             newPassword = node.get("newPassword").asText();
+    //             username = node.get("username").asText();
+                
+    //         } catch (JsonParseException e) {
+    //               e.printStackTrace();
+    //         } catch (JsonMappingException e) {
+    //             e.printStackTrace();
+    //         } catch (IOException e) {
+    //             e.printStackTrace();
+    //         }
+
+    //         employeeRepository.changeEmployeePassword(username, newPassword);
+    //         return true;
+    //     }
+    //     return false;
+    // }
 }

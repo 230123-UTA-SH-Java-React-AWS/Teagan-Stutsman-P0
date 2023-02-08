@@ -98,20 +98,30 @@ public class EmployeeController implements HttpHandler {
 
     }
 
-    // Will be used to update employee passwords
+    // Will be used to update employee manager status
     private void putRequest(HttpExchange exchange) throws IOException{
         String httpRequestBody = getHttpRequestBody(exchange);
         String outgoingMessage = "";
 
-        boolean passwordChangeSuccess = employeeService.changeEmployeePassword(httpRequestBody);
+        boolean employeeWasPromoted = employeeService.changeEmployee(httpRequestBody);
 
-        if(passwordChangeSuccess){
-            outgoingMessage = "Password Successfully Changed";
-            exchange.sendResponseHeaders(409, outgoingMessage.getBytes().length);
+        if(employeeWasPromoted){
+            outgoingMessage = "Employee manager status successfully changed";
+            exchange.sendResponseHeaders(200, outgoingMessage.getBytes().length);
         } else {
-            outgoingMessage = "Password Change Failed";
+            outgoingMessage = "Invalid manager status request";
             exchange.sendResponseHeaders(409, outgoingMessage.getBytes().length);
         }
+
+        // boolean passwordChangeSuccess = employeeService.changeEmployeePassword(httpRequestBody);
+
+        // if(passwordChangeSuccess){
+        //     outgoingMessage = "Password Successfully Changed";
+        //     exchange.sendResponseHeaders(409, outgoingMessage.getBytes().length);
+        // } else {
+        //     outgoingMessage = "Password Change Failed";
+        //     exchange.sendResponseHeaders(409, outgoingMessage.getBytes().length);
+        // }
 
         OutputStream outputStream = exchange.getResponseBody();
         outputStream.write(outgoingMessage.getBytes());

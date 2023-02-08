@@ -14,30 +14,35 @@ public class Ticket {
         }
     }
 
+    public enum ReimbursementType {
+        OTHER(0), TRAVEL(1), LODGING(2), FOOD(3);
+
+        private final int value;
+        private ReimbursementType(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
     private int ticketID;
     private String username;
     private int employeeID;
     private float amount;
     private String description;
     private Status status;
-
-    // Username option
-    // public Ticket(int ticketID, int employeeID, float amount, String description, Status status, String username){
-    //     this.ticketID = ticketID;
-    //     this.employeeID = employeeID;
-    //     this.amount = amount;
-    //     this.description = description;
-    //     this.status = status;
-    //     this.username = username;
-    // }
+    private ReimbursementType reimbursementType;
 
     // No username option
-    public Ticket(int ticketID, int employeeID, float amount, String description, Status status){
+    public Ticket(int ticketID, int employeeID, float amount, String description, Status status, ReimbursementType reimbursementType){
         this.ticketID = ticketID;
         this.employeeID = employeeID;
         this.amount = amount;
         this.description = description;
         this.status = status;
+        this.reimbursementType = reimbursementType;
     }
 
     // Empty Option
@@ -80,5 +85,12 @@ public class Ticket {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+    public ReimbursementType getReimbursementType() {
+        return reimbursementType;
+    }
+
+    public void setReimbursementType(ReimbursementType reimbursementType) {
+        this.reimbursementType = reimbursementType;
     }
 }

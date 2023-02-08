@@ -15,6 +15,7 @@ import org.codehaus.jackson.map.module.SimpleModule;
 
 import com.revature.model.Ticket;
 import com.revature.model.User;
+import com.revature.model.Ticket.ReimbursementType;
 import com.revature.model.User.ManagerStatus;
 import com.revature.repository.EmployeeRepository;
 import com.revature.repository.TicketRepository;
@@ -28,6 +29,7 @@ public class TicketService {
     public int requestReimbursement(String ticketJSON){
         String username, description;
         float amount;
+        ReimbursementType reimbursementType = ReimbursementType.OTHER;
 
         try {
             
@@ -35,6 +37,10 @@ public class TicketService {
             username = node.get("username").asText();
             amount = Float.parseFloat(node.get("amount").asText());
             description = node.get("description").asText();
+
+            if(node.findValue("reimbursementType") != null){
+                reimbursementType = Ticket.ReimbursementType.valueOf(node.get("reimbursementType").asText());
+            }
 
         } catch (NumberFormatException e){
             return 2;
@@ -65,7 +71,7 @@ public class TicketService {
             return 2;
         }
 
-        ticketRepository.submitNewTicket(user.getEmployeeID(), amount, description);
+        ticketRepository.submitNewTicket(user.getEmployeeID(), amount, description, reimbursementType);
         return 0;
     }
 
@@ -74,7 +80,8 @@ public class TicketService {
         ArrayList<Ticket> ticketList = ticketRepository.getAllTickets();
         String username = "";
         Ticket.Status ticketStatus = Ticket.Status.PENDING;
-        boolean filterByStatus = false;
+        boolean filterByStatus = false, filterByType = false;
+        ReimbursementType reimbursementType = ReimbursementType.OTHER;
 
         // Gets our fields from JSON String
         try {
@@ -84,6 +91,10 @@ public class TicketService {
             if(node.findValue("ticketStatus") != null){
                 filterByStatus = true;
                 ticketStatus = Ticket.Status.valueOf(node.get("ticketStatus").asText());
+            }
+            if(node.findValue("reimbursementType") != null){
+                filterByType = true;
+                reimbursementType = ReimbursementType.valueOf(node.get("reimbursementType").asText());
             }
             
         }   catch (JsonParseException e){
@@ -107,6 +118,11 @@ public class TicketService {
             // Filters out status that aren't requested
             final Ticket.Status compareStatus = ticketStatus; // compare value needs to be final
             ticketList.removeIf(t -> !compareStatus.equals(t.getStatus()));
+        }
+
+        if(filterByType){
+            final ReimbursementType compareType = reimbursementType;
+            ticketList.removeIf(t -> !compareType.equals(t.getReimbursementType()));
         }
 
         // Add username to ticket
@@ -142,10 +158,10 @@ public class TicketService {
         EmployeeRepository employeeRepository = new EmployeeRepository();
         User user = employeeRepository.getEmployee(username);
 
-        Ticket ticket = ticketRepository.getOneTicket(ticketID);
+        Ticket.Status ticketStatus = ticketRepository.getTicketStatus(ticketID);
 
         boolean userIsManager = user.getManagerStatus().equals(ManagerStatus.MANAGER);
-        boolean ticketIsPending = ticket.getStatus().equals(Ticket.Status.PENDING);
+        boolean ticketIsPending = ticketStatus.equals(Ticket.Status.PENDING);
 
         if(userIsManager && ticketIsPending) {
             ticketRepository.updateTicketStatus(ticketID, status);

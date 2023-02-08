@@ -8,12 +8,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.revature.model.Ticket;
-
+import com.revature.model.Ticket.ReimbursementType;
 import com.revature.util.ConnectionUtil;
 
 public class TicketRepository {
-    public void submitNewTicket(int employeeID, float amount, String description){
-        String sql = "INSERT INTO tickets (employeeID, amount, description, status) VALUES (?, ?, ?, ?)";
+    public void submitNewTicket(int employeeID, float amount, String description, ReimbursementType reimbursementType){
+        String sql = "INSERT INTO tickets (employeeID, amount, description, status, reimbursementtype) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection con = ConnectionUtil.getConnection()) {
             
@@ -23,6 +23,7 @@ public class TicketRepository {
             preparedStatement.setFloat(2, amount);
             preparedStatement.setString(3, description);
             preparedStatement.setInt(4, 0);
+            preparedStatement.setInt(5, reimbursementType.getValue());
 
             preparedStatement.execute();
 
@@ -41,12 +42,13 @@ public class TicketRepository {
 
             while(rs.next()){
                 int ticketid = rs.getInt(1);
-                Float amount = Float.parseFloat(rs.getString(2));
+                Float amount = rs.getFloat(2);
                 String description = rs.getString(3);
                 Ticket.Status status = Ticket.Status.values()[rs.getInt(4)];
                 int employeeid = rs.getInt(5);
+                ReimbursementType reimbursementType = ReimbursementType.values()[rs.getInt(6)];
 
-                ticketList.add(new Ticket(ticketid, employeeid, amount, description, status));
+                ticketList.add(new Ticket(ticketid, employeeid, amount, description, status, reimbursementType));
             }
 
         } catch (SQLException e){
@@ -56,8 +58,8 @@ public class TicketRepository {
         return ticketList;
     }
 
-    public Ticket getOneTicket(int ticketID){
-        Ticket ticket = new Ticket();
+    public Ticket.Status getTicketStatus(int ticketID){
+        Ticket.Status ticketStatus = Ticket.Status.PENDING;
         String sql = "SELECT * FROM tickets WHERE ticketid = ?";
 
         try (Connection connection = ConnectionUtil.getConnection()) {
@@ -67,12 +69,12 @@ public class TicketRepository {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            ticket.setStatus(Ticket.Status.values()[resultSet.getInt("status")]);
+            ticketStatus = Ticket.Status.values()[resultSet.getInt("status")];
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return ticket;
+        return ticketStatus;
     }
 
     public void updateTicketStatus(int ticketID, Ticket.Status status){
