@@ -6,7 +6,6 @@ import java.util.HashSet;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -101,7 +100,7 @@ public class EmployeeService {
             username2 = node.get("employeeName").asText();
             newStatus = ManagerStatus.valueOf(node.get("newManagerStatus").asText());
 
-            
+
         } catch (JsonParseException e) {
             e.printStackTrace();
             return false;
