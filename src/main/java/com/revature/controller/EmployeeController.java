@@ -41,7 +41,7 @@ public class EmployeeController implements HttpHandler {
                 break;
             
             default:
-                System.out.println("Bruh wtf...");
+                System.out.println("Bruh...");
                 break;
 
         }
@@ -110,7 +110,7 @@ public class EmployeeController implements HttpHandler {
             exchange.sendResponseHeaders(200, outgoingMessage.getBytes().length);
         } else {
             outgoingMessage = "Invalid manager status request";
-            exchange.sendResponseHeaders(409, outgoingMessage.getBytes().length);
+            exchange.sendResponseHeaders(401, outgoingMessage.getBytes().length);
         }
 
         // boolean passwordChangeSuccess = employeeService.changeEmployeePassword(httpRequestBody);

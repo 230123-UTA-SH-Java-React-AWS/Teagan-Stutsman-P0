@@ -78,7 +78,7 @@ public class TicketController implements HttpHandler {
                 break;
             case 4:
                 response = "Username not recognized - could not submit ticket";
-                exchange.sendResponseHeaders(400, response.getBytes().length);
+                exchange.sendResponseHeaders(401, response.getBytes().length);
                 break;
             default:
                 response = "Ticket Invalid - Fields Missing or Corrupted";
@@ -108,11 +108,11 @@ public class TicketController implements HttpHandler {
                 break;
             case 2:
                 response = "You do not have permissions to approve/deny tickets";
-                exchange.sendResponseHeaders(500, response.getBytes().length);
+                exchange.sendResponseHeaders(401, response.getBytes().length);
                 break;
             default:
                 response = "You do not have permissions to approve/deny tickets";
-                exchange.sendResponseHeaders(500, response.getBytes().length);
+                exchange.sendResponseHeaders(401, response.getBytes().length);
                 break;
         }
         OutputStream outputStream = exchange.getResponseBody();
