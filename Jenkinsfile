@@ -19,7 +19,7 @@ pipeline {
                 sh 'sudo docker image prune -f'
 
                 // Builds image of application
-                sh 'sudo docker build -t TStutsman/api:latest .'
+                sh 'sudo docker build -t tstutsma/api:latest .'
             }
         }
 
@@ -29,7 +29,7 @@ pipeline {
                 sh 'sudo docker rm $(sudo docker ps -aq)'
 
                 // Run latest version of image
-                sh 'sudo docker run -e url=$url -e secret=$secret -d -p 80:5050 -t TStutsman/api:latest'
+                sh 'sudo docker run -e url=$url -d -p 80:5050 -t tstutsma/api:latest'
             }
         }
     }
